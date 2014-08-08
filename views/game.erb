@@ -1,0 +1,50 @@
+<h3> Your bet is <%= session[:player_bet] %>!</h3>
+
+<h3> Shuffling...</h3>
+<h3> Dealing...</h3>
+
+<h4> Dealer Cards:</h4>
+  <%= hand_display(session[:dealer_cards]) %>
+  
+<br>
+<br>
+
+<h4> <%= "#{session[:player_name]} Cards:" %></h4>
+  <%= hand_display(session[:player_cards]) %>
+
+<% if session[:player_stay] == 0 %>  
+<form action='/player_decision' method='post'>
+  <input type='submit' name='hit' value='Hit' class='btn'/>
+  <input type='submit' name='stay' value='Stay' class='btn'/>
+</form>
+<% end %>
+
+<% if session[:player_stay] == 1 && hand_value(session[:player_cards]) <= 21%>
+<%= "The player has decided to stay" %>
+<% elsif hand_value(session[:player_cards]) > 21 %>
+<%= "The player has busted!" %>
+<% end %>
+<br>
+<br>
+<% if hand_value(session[:dealer_cards]) > 16 && hand_value(session[:dealer_cards]) <= 21 %>
+<%= "The dealer must stay!" %>
+<% elsif hand_value(session[:dealer_cards]) > 21 %>
+<%= "The dealer has busted!" %>
+<% else  %>
+<% end %>
+<br>
+
+<% if session[:player_stay] == 1 && session[:dealer_stay] == 1 && @resolution %>
+<%= @resolution %>
+<br>
+<%= @update %>
+<br>
+<br>
+<form action='/player' method='get'>
+  <input type='submit' name='Play Again?' value='Play Again?' class='btn'>
+</form>
+
+
+<% end %>
+
+
