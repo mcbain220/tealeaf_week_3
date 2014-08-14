@@ -1,0 +1,22 @@
+
+.game_background {
+  margin: 0;
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 14px;
+  line-height: 20px;
+  color: #333333;
+  background-color: #009966;
+}
+
+img {
+	padding-left: 10px;
+}
+
+.level2 {
+	padding-left: 20px;
+}
+
+.container {
+	padding-left: 20px;
+	padding-top: 20px;
+}

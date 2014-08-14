@@ -1,4 +1,4 @@
-
+<div class="well">
 
 <h1><%= "Hello, " + session[:player_name] + "!" %></h1>
 <h3>We are giving you <%= session[:player_balance] %> chips to start!</h3>
@@ -8,5 +8,6 @@
 <form action='/player' method='post'>
   Bet Amount: <input type='integer' name='player_bet'>
     <br/>
-  <input type='submit' class='btn'/>
+  <input type='submit' class='btn-primary btn-large>'/>
 </form>
+</div>

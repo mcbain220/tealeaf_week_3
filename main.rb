@@ -8,17 +8,17 @@ helpers do
 
   def deck_create
 
-    deck_suits = ["Hearts", "Spades", "Diamonds", "Clubs"]
+    deck_suits = ["hearts", "spades", "diamonds", "clubs"]
 
     deck_values = { "2" => 2, "3" => 3, "4" => 4, "5" => 5, "6" => 6, 
-                  "7" => 7, "8" => 8, "9" => 9, "10" => 10, "J" => 10, 
-                  "Q" => 10, "K" => 10, "A" => 11 }
+                  "7" => 7, "8" => 8, "9" => 9, "10" => 10, "jack" => 10, 
+                  "queen" => 10, "king" => 10, "ace" => 11 }
                
     single_deck = []
 
     deck_values.each do | key, val |
       deck_suits.each do | suit |
-        single_deck << [(key +"-" + suit), val]
+        single_deck << [(suit + "_" + key), val]
       end
     end
     single_deck
@@ -57,7 +57,8 @@ helpers do
     cards.each do |sub_array|
       cards_array << sub_array.first
     end
-    cards_array.join(" / ")
+    # cards_array.join(" / ")  <--- was originally returning the hand in text form.
+    cards_array
   end
       
 
@@ -71,15 +72,17 @@ get '/' do
   erb :home
 end
 
-get '/set_name' do
-  erb :set_name
-end
-
 post '/set_name' do
-  session[:player_name] = params[:player_name]    #this sets the variable into the cookie for cheap persistence
-  session[:player_balance] = 1000
-  session[:game_deck] = []
-  redirect '/player'
+  if session[:player_name].is_a?(String)
+    session[:player_balance] = 1000
+    session[:game_deck] = []
+    redirect '/player'
+  else
+    session[:player_name] = params[:player_name]    #this sets the variable into the cookie for cheap persistence
+    session[:player_balance] = 1000
+    session[:game_deck] = []
+    redirect '/player'
+  end
 end
 
 get '/player' do
@@ -121,10 +124,17 @@ end
 get '/game' do
   hand_value(session[:player_cards])
   hand_value(session[:dealer_cards])
-  erb :game
+
+  if hand_value(session[:player_cards]) <= 21
+    erb :game
+  else
+    session[:player_stay] = 1
+    redirect '/dealer_decision'
+  end
 end
 
 post '/player_decision' do
+  # binding.pry
   if params[:hit] == "Hit"
     session[:player_cards] << session[:game_deck].shift
     params[:hit] = nil
@@ -138,13 +148,17 @@ end
 get '/dealer_decision' do
   erb :game
   
-  while hand_value(session[:dealer_cards]) < 17
-    session[:dealer_cards] << session[:game_deck].shift
+  if hand_value(session[:player_cards]) > 21
+    session[:dealer_stay] = 1
     erb :game
+  else
+    while hand_value(session[:dealer_cards]) < 17
+      session[:dealer_cards] << session[:game_deck].shift
+      erb :game
+    end
   end
   
   session[:dealer_stay] = 1
-  
   redirect '/game_resolution' 
 end
     

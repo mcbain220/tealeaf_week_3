@@ -1,50 +1,74 @@
-<h3> Your bet is <%= session[:player_bet] %>!</h3>
+<div class='game_background'>
 
-<h3> Shuffling...</h3>
-<h3> Dealing...</h3>
+
+
+<div class='container'>
 
 <h4> Dealer Cards:</h4>
-  <%= hand_display(session[:dealer_cards]) %>
-  
-<br>
-<br>
+  <% # hand_display(session[:dealer_cards]) %>
+  <% if session[:player_stay] == 0 %>
+    <img src="/images/cards/cover.jpg">
+    <img src="/images/cards/<%=get_cards(session[:dealer_cards]).last %>.jpg">
+  <% else %>
+    <% get_cards(session[:dealer_cards]).each do |sub_array|%>
+    <img src="/images/cards/<%= sub_array %>.jpg">
+    <% end %>
+  <% end %>
+</div>  
 
-<h4> <%= "#{session[:player_name]} Cards:" %></h4>
-  <%= hand_display(session[:player_cards]) %>
-
-<% if session[:player_stay] == 0 %>  
-<form action='/player_decision' method='post'>
-  <input type='submit' name='hit' value='Hit' class='btn'/>
-  <input type='submit' name='stay' value='Stay' class='btn'/>
-</form>
-<% end %>
+<div class='container'>
+  <div class='level2'>
+  <h3> Your bet is <%= session[:player_bet] %>!</h3>
 
 <% if session[:player_stay] == 1 && hand_value(session[:player_cards]) <= 21%>
-<%= "The player has decided to stay" %>
+  <h3><%= "The player has decided to stay" %></h3>
 <% elsif hand_value(session[:player_cards]) > 21 %>
-<%= "The player has busted!" %>
+  <h3><%= "The player has busted!" %></h3>
 <% end %>
-<br>
-<br>
 <% if hand_value(session[:dealer_cards]) > 16 && hand_value(session[:dealer_cards]) <= 21 %>
-<%= "The dealer must stay!" %>
+  <h3><%= "The dealer must stay!" %></h3>
 <% elsif hand_value(session[:dealer_cards]) > 21 %>
-<%= "The dealer has busted!" %>
+  <h3><%= "The dealer has busted!" %></h3>
 <% else  %>
 <% end %>
-<br>
 
 <% if session[:player_stay] == 1 && session[:dealer_stay] == 1 && @resolution %>
-<%= @resolution %>
+  <h3><%= @resolution %></h3>
+  <h3><%= @update %></h3>
 <br>
-<%= @update %>
-<br>
-<br>
-<form action='/player' method='get'>
-  <input type='submit' name='Play Again?' value='Play Again?' class='btn'>
-</form>
+
+<% if session[:player_balance] > 0 && session[:player_stay] == 1 && session[:dealer_stay] == 1 %>
+  <h3><%= "Sorry, " + session[:player_name] + "!  You've run out of chips!" %></h3>
+  <form action='/player' method='get'>
+    <input type='submit' name='Play Again?' value='Play Again?' class='btn btn-primary'>
+  </form>
+<% else %>
+    <form action='/set_name' method='post'>
+  <input type='submit' value="Try Again?" class='btn btn-primary'/>
+<%  end %>
+
 
 
 <% end %>
+</div>
+</div>
 
+<div class='container'>
+<h4> <%= "#{session[:player_name]} Cards:" %></h4>
+  <% # hand_display(session[:player_cards]) %>
+  <% get_cards(session[:player_cards]).each do |sub_array|%>
+  <img src="/images/cards/<%= sub_array %>.jpg">
+  <% end %>
+</div>
+<div class='container'>
+<% if session[:player_stay] == 0 || hand_value(session[:player_cards]) <= 21 %>  
+<form action='/player_decision' method='post'>
+  <input type='submit' name='hit' value='Hit' class='btn btn-primary'/>
+  <input type='submit' name='stay' value='Stay' class='btn btn-danger'/>
+</form>
+<% end %>
+</div>
+
+
+</div>
 
